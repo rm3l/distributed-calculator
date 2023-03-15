@@ -27,7 +27,8 @@ export default class App extends React.Component {
   };
 
   persistState = (value) => {
-    console.log(`Persisting State:`);
+    console.log("State persistence disabled as it is provided by Dapr");
+    /* console.log(`Persisting State:`);
     console.log(JSON.stringify(value));
 
     const state = [{ 
@@ -41,13 +42,15 @@ export default class App extends React.Component {
       headers: {
         "Content-Type": "application/json"
       }
-    });
+    }); */
   }
   
   getState = async () => {
-    const rawResponse = await fetch("/state");
+    console.log("State management disabled as it is provided by Dapr");
+    /* const rawResponse = await fetch("/state");
     const calculatorState = await rawResponse.json();
-    return calculatorState;
+    return calculatorState; */
+    return null;
   }
 
   render() {
