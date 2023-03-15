@@ -41,3 +41,5 @@ packages
 
 # macOS
 .DS_Store
+
+.odo
