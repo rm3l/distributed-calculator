@@ -1,0 +1,190 @@
+schemaVersion: 2.2.0
+
+metadata:
+  name: distributed-calculator
+  version: 0.0.1
+  displayName: Distributed Calculator
+  description: |
+    Distributed Calculator app where each operation is powered by a different service written in a different language/framework:
+      - Addition: Go mux application
+      - Multiplication: Python flask application
+      - Division: Node Express application
+      - Subtraction: .NET Core application
+  tags:
+  - microservices
+  - distributed
+  - calculator
+  - csharp
+  - dotnet-core
+  - go
+  - mux
+  - node
+  - express
+  - python
+  - flask
+
+components:
+
+- name: react-frontend
+  container:
+    image: docker.io/node:19-alpine
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+    - name: FRONTEND_PORT
+      value: '8080'
+    endpoints:
+    - name: frontend
+      targetPort: 8080
+
+- name: go-adder
+  container:
+    image: quay.io/devfile/golang:latest
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+    - name: APP_PORT
+      value: '6000'
+    endpoints:
+    - name: adder
+      targetPort: 6000
+      exposure: internal
+
+- name: python-multiplier
+  container:
+    image: registry.access.redhat.com/ubi9/python-39:latest
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+    - name: FLASK_RUN_PORT
+      value: '5000'
+    endpoints:
+    - name: multiplier
+      targetPort: 5000
+      exposure: internal
+
+- name: node-divider
+  container:
+    # registry.access.redhat.com/ubi8/nodejs-16:latest does not work because of non-root user in container. No permissions to write node_modules...
+    #image: registry.access.redhat.com/ubi8/nodejs-16:latest
+    image: docker.io/node:19-alpine
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    endpoints:
+    - name: divider
+      targetPort: 4000
+      exposure: internal
+
+- name: dotnet-subtracter
+  container:
+    # registry.access.redhat.com/ubi8/dotnet-31:3.1 does not work because of non-root user in container. No permissions to write...
+    # image: registry.access.redhat.com/ubi8/dotnet-31:3.1
+    image: mcr.microsoft.com/dotnet/sdk:7.0
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+    - name: ASPNETCORE_URLS
+      value: 'http://localhost:7000'
+    endpoints:
+    - name: subtracter
+      targetPort: 7000
+      exposure: internal
+
+commands:
+- id: adder-build
+  exec:
+    component: go-adder
+    workingDir: ${PROJECT_SOURCE}/go
+    commandLine: 'go build app.go'
+
+- id: adder-run
+  exec:
+    component: go-adder
+    commandLine: '${PROJECT_SOURCE}/go/app'
+
+- id: multiplier-build
+  exec:
+    component: python-multiplier
+    #workingDir: ${PROJECT_SOURCE}/python
+    commandLine: 'pip3 install wheel python-dotenv flask_cors flask'
+
+- id: multiplier-run
+  exec:
+    component: python-multiplier
+    workingDir: ${PROJECT_SOURCE}/python
+    commandLine: 'flask run'
+
+- id: divider-build
+  exec:
+    component: node-divider
+    workingDir: ${PROJECT_SOURCE}/node
+    commandLine: 'npm install'
+
+- id: divider-run
+  exec:
+    component: node-divider
+    workingDir: ${PROJECT_SOURCE}/node
+    commandLine: 'node app.js'
+
+- id: subtracter-build
+  exec:
+    component: dotnet-subtracter
+    workingDir: ${PROJECT_SOURCE}/csharp
+    commandLine: 'dotnet build'
+
+- id: subtracter-run
+  exec:
+    component: dotnet-subtracter
+    workingDir: ${PROJECT_SOURCE}/csharp/bin/Debug/netcoreapp7.0
+    commandLine: 'dotnet Subtract.dll --verbosity detailed'
+
+- id: frontend-build-npm-install
+  exec:
+    component: react-frontend
+    workingDir: ${PROJECT_SOURCE}/react-calculator
+    commandLine: 'npm install'
+
+- id: frontend-build-buildclient
+  exec:
+    component: react-frontend
+    workingDir: ${PROJECT_SOURCE}/react-calculator
+    commandLine: 'npm run buildclient'
+
+- id: frontend-build
+  composite:
+    parallel: false
+    commands:
+    - frontend-build-npm-install
+    - frontend-build-buildclient
+
+- id: frontend-run
+  exec:
+    component: react-frontend
+    workingDir: ${PROJECT_SOURCE}/react-calculator
+    commandLine: 'node server.js'
+
+- id: build
+  composite:
+    parallel: true
+    commands:
+    - adder-build
+    - multiplier-build
+    - divider-build
+    - subtracter-build
+    - frontend-build
+    group:
+        kind: build
+        isDefault: true
+
+- id: run
+  composite:
+    parallel: true
+    commands:
+    - adder-run
+    - multiplier-run
+    - divider-run
+    - subtracter-run
+    - frontend-run
+    group:
+        kind: run
+        isDefault: true
