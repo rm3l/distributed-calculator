@@ -7,28 +7,18 @@ const app = express();
 
 app.use(express.json());
 
-const port = 8080;
-//const daprPort = process.env.DAPR_HTTP_PORT ?? 3500;
-
-//const daprUrl = `http://localhost:${daprPort}/v1.0/invoke`;
-
-// The name of the state store is specified in the components yaml file. 
-// For this sample, state store name is specified in the file at: https://github.com/dapr/quickstarts/blob/master/hello-kubernetes/deploy/redis.yaml#L4
-//const stateStoreName = `statestore`;
-//const stateUrl = `http://localhost:${daprPort}/v1.0/state/${stateStoreName}`;
-
+const port = process.env.FRONTEND_PORT || 8080;
 const subtractServiceUrl = process.env.SUBSTRACT_SERVICE_URL || "http://127.0.0.1:7000";
 const addServiceUrl = process.env.ADD_SERVICE_URL || "http://127.0.0.1:6000";
 const muliplyServiceUrl = process.env.MULTIPLY_SERVICE_URL || "http://127.0.0.1:5000";
 const divideServiceUrl = process.env.DIVIDE_SERVICE_URL || "http://127.0.0.1:4000";
 
 /**
-The following routes forward requests (using pipe) from our React client to our dapr-enabled services. Our Dapr sidecar lives on localhost:<daprPort>. We invoke other Dapr enabled services by calling /v1.0/invoke/<DAPR_ID>/method/<SERVICE'S_ROUTE>.
+The following routes forward requests (using pipe) from our React client to our other services. 
 */
 
 app.post('/calculate/add', async (req, res) => {
   try {
-      // Invoke Dapr add app
       const appResponse = await axios.post(`${addServiceUrl}/add`, req.body);
 
       // Return expected string result to client
@@ -40,7 +30,6 @@ app.post('/calculate/add', async (req, res) => {
 
 app.post('/calculate/subtract', async (req, res) => {
   try {
-      // Invoke Dapr subtract app
       console.log("subtract app** 1")
       const appResponse = await axios.post(`${subtractServiceUrl}/subtract`, req.body);
       console.log("subtract app** 2")
@@ -53,7 +42,6 @@ app.post('/calculate/subtract', async (req, res) => {
 
 app.post('/calculate/multiply', async (req, res) => {
   try {
-      // Dapr invoke multiply app
       const appResponse = await axios.post(`${muliplyServiceUrl}/multiply`, req.body);
 
       // Return expected string result to client
@@ -65,7 +53,6 @@ app.post('/calculate/multiply', async (req, res) => {
 
 app.post('/calculate/divide', async (req, res) => {
   try {
-      // Dapr invoke divide app
       const appResponse = await axios.post(`${divideServiceUrl}/divide`, req.body);
 
       // Return expected string result to client
@@ -75,27 +62,12 @@ app.post('/calculate/divide', async (req, res) => {
   }
 });
 
-// Forward state retrieval to Dapr state endpoint
 app.get('/state', async (req, res) => {
-  try {
-    // Getting Dapr state
-    const apiResponse = await axios.get(`${stateUrl}/calculatorState`);
-
-    return res.send(apiResponse.data);
-  } catch (err) {
-    console.log(err);
-  }
+  // not implemented
 });
 
-// Forward state persistence to Dapr state endpoint
 app.post('/persist', async (req, res) => {
-  try {
-     // Saving Dapr state
-    const apiResponse = await axios.post(stateUrl, req.body);
-    return res.send(apiResponse.data);  
-  } catch (err) {
-    console.log(err);
-  }
+  // not implemented
 });
 
 // Serve static files

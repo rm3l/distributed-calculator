@@ -27,29 +27,11 @@ export default class App extends React.Component {
   };
 
   persistState = (value) => {
-    console.log("State persistence disabled as it is provided by Dapr");
-    /* console.log(`Persisting State:`);
-    console.log(JSON.stringify(value));
-
-    const state = [{ 
-      key: "calculatorState", 
-      value 
-    }];
-    
-    fetch("/persist", {
-      method: "POST",
-      body: JSON.stringify(state),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }); */
+    // Not implemented
   }
   
   getState = async () => {
-    console.log("State management disabled as it is provided by Dapr");
-    /* const rawResponse = await fetch("/state");
-    const calculatorState = await rawResponse.json();
-    return calculatorState; */
+    // Not implemented
     return null;
   }
 
