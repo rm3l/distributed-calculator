@@ -13,4 +13,4 @@ Services and languages/frameworks:
 
 The front-end application consists of a server and a client written in [React](https://reactjs.org/).
 
-![Calculator Screenshot](./img/calculator-screenshot.JPG)
+![Distributed Calculator Screenshot](./img/distributed-calc-microservices-preview.png)
