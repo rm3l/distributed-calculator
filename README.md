@@ -11,5 +11,6 @@ Services and languages/frameworks:
 - **Division**: Node [Express](https://expressjs.com/) application
 - **Subtraction**: [.NET Core](https://docs.microsoft.com/en-us/dotnet/core/) application
 
-The front-end application consists of a server and a client written in [React](https://reactjs.org/). 
-Kudos to [ahfarmer](https://github.com/ahfarmer) whose [React calculator](https://github.com/ahfarmer/calculator) 
+The front-end application consists of a server and a client written in [React](https://reactjs.org/).
+
+![Calculator Screenshot](./img/calculator-screenshot.JPG)
