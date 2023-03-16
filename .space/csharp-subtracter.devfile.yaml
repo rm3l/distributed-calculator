@@ -22,7 +22,7 @@ attributes:
       type: Rider
     # projectRoot is specified for Rider
     # relative to repository root
-    # projectRoot: projects/my-project/MySolution.sln
+    projectRoot: csharp/Subtract/Subtract.sln
 
 components:
 
