@@ -14,6 +14,13 @@ metadata:
   - node
   - express
 
+attributes:
+  space:
+    # regular, large, xlarge
+    instanceType: regular
+    editor:
+      type: WebStorm
+
 components:
 
 - name: node-divider

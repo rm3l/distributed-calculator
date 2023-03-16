@@ -23,6 +23,13 @@ metadata:
   - python
   - flask
 
+attributes:
+  space:
+    # regular, large, xlarge
+    instanceType: regular
+    editor:
+      type: Idea
+
 components:
 
 - name: react-frontend

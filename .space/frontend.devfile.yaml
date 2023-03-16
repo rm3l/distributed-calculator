@@ -12,6 +12,13 @@ metadata:
     - calculator
     - react
 
+attributes:
+  space:
+    # regular, large, xlarge
+    instanceType: regular
+    editor:
+      type: WebStorm
+
 variables:
   SUBSTRACT_SERVICE_URL: 'http://distributed-calculator-subtracter-app:7000'
   ADD_SERVICE_URL: 'http://distributed-calculator-adder-app:6000'

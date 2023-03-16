@@ -14,6 +14,16 @@ metadata:
   - csharp
   - dotnet-core
 
+attributes:
+  space:
+    # regular, large, xlarge
+    instanceType: regular
+    editor:
+      type: Rider
+    # projectRoot is specified for Rider
+    # relative to repository root
+    # projectRoot: projects/my-project/MySolution.sln
+
 components:
 
 - name: dotnet-subtracter

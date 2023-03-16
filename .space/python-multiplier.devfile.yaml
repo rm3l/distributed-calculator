@@ -14,6 +14,13 @@ metadata:
   - python
   - flask
 
+attributes:
+  space:
+    # regular, large, xlarge
+    instanceType: regular
+    editor:
+      type: PyCharm
+
 components:
 
 - name: python-multiplier

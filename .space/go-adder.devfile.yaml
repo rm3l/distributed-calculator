@@ -14,6 +14,13 @@ metadata:
   - go
   - mux
 
+attributes:
+  space:
+    # regular, large, xlarge
+    instanceType: regular
+    editor:
+      type: GoLand
+
 components:
 
 - name: go-adder
