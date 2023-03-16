@@ -1,0 +1,74 @@
+schemaVersion: 2.2.0
+
+metadata:
+    name: distributed-calculator-frontend
+    version: 0.0.1
+    displayName: Distributed Calculator Frontend
+    description: |
+      Frontend for a Distributed Calculator app where each operation is powered by a different service written in a different language/framework
+    tags:
+    - microservices
+    - distributed
+    - calculator
+    - react
+
+variables:
+  SUBSTRACT_SERVICE_URL: 'http://distributed-calculator-subtracter-app:7000'
+  ADD_SERVICE_URL: 'http://distributed-calculator-adder-app:6000'
+  MULTIPLY_SERVICE_URL: 'http://distributed-calculator-multiplier-app:5000'
+  DIVIDE_SERVICE_URL: 'http://distributed-calculator-divider-app:4000'
+
+components:
+
+- name: react-frontend
+  container:
+    image: docker.io/node:19-alpine
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+    - name: FRONTEND_PORT
+      value: '8080'
+    - name: SUBSTRACT_SERVICE_URL
+      value: '{{ SUBSTRACT_SERVICE_URL }}'
+    - name: ADD_SERVICE_URL
+      value: '{{ ADD_SERVICE_URL }}'
+    - name: MULTIPLY_SERVICE_URL
+      value: '{{ MULTIPLY_SERVICE_URL }}'
+    - name: DIVIDE_SERVICE_URL
+      value: '{{ DIVIDE_SERVICE_URL }}'
+    endpoints:
+    - name: frontend
+      targetPort: 8080
+
+commands:
+
+- id: frontend-build-npm-install
+  exec:
+    component: react-frontend
+    workingDir: ${PROJECT_SOURCE}
+    commandLine: 'npm install'
+
+- id: frontend-build-buildclient
+  exec:
+    component: react-frontend
+    workingDir: ${PROJECT_SOURCE}
+    commandLine: 'npm run buildclient'
+
+- id: frontend-build
+  composite:
+    parallel: false
+    commands:
+    - frontend-build-npm-install
+    - frontend-build-buildclient
+    group:
+      kind: build
+      isDefault: true
+
+- id: frontend-run
+  exec:
+    component: react-frontend
+    workingDir: ${PROJECT_SOURCE}
+    commandLine: 'node server.js'
+    group:
+      kind: run
+      isDefault: true
