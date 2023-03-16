@@ -1,0 +1,51 @@
+schemaVersion: 2.2.0
+
+metadata:
+  name: distributed-calculator-multiplier
+  version: 0.0.1
+  displayName: Distributed Calculator Multiplier
+  description: |
+    Multiplier Service, part of a distributed Calculator app
+    where each operation is powered by a different service written in a different language/framework
+  tags:
+  - microservices
+  - distributed
+  - calculator
+  - python
+  - flask
+
+components:
+
+- name: python-multiplier
+  container:
+    image: registry.access.redhat.com/ubi9/python-39:latest
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+    - name: FLASK_RUN_HOST
+      value: '0.0.0.0'
+    - name: FLASK_RUN_PORT
+      value: '5000'
+    endpoints:
+    - name: multiplier
+      targetPort: 5000
+      exposure: internal
+
+commands:
+
+- id: multiplier-build
+  exec:
+    component: python-multiplier
+    commandLine: 'pip3 install wheel python-dotenv flask_cors flask'
+    group:
+      kind: build
+      isDefault: true
+
+- id: multiplier-run
+  exec:
+    component: python-multiplier
+    workingDir: ${PROJECT_SOURCE}
+    commandLine: 'flask run'
+    group:
+      kind: run
+      isDefault: true

@@ -1,0 +1,52 @@
+schemaVersion: 2.2.0
+
+metadata:
+  name: distributed-calculator-subtracter
+  version: 0.0.1
+  displayName: Distributed Calculator Subtracter
+  description: |
+    Subtracter service, part of a distributed Calculator app where
+    each operation is powered by a different service written in a different language/framework
+  tags:
+  - microservices
+  - distributed
+  - calculator
+  - csharp
+  - dotnet-core
+
+components:
+
+- name: dotnet-subtracter
+  container:
+    # registry.access.redhat.com/ubi8/dotnet-31:3.1 does not work because of non-root user in container. No permissions to write...
+    # image: registry.access.redhat.com/ubi8/dotnet-31:3.1
+    image: mcr.microsoft.com/dotnet/sdk:7.0
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+    - name: ASPNETCORE_URLS
+      value: 'http://0.0.0.0:7000'
+    endpoints:
+    - name: subtracter
+      targetPort: 7000
+      exposure: internal
+
+commands:
+
+- id: subtracter-build
+  exec:
+    component: dotnet-subtracter
+    workingDir: ${PROJECT_SOURCE}
+    commandLine: 'dotnet build'
+    group:
+        kind: build
+        isDefault: true
+
+- id: subtracter-run
+  exec:
+    component: dotnet-subtracter
+    workingDir: ${PROJECT_SOURCE}/bin/Debug/netcoreapp7.0
+    commandLine: 'dotnet Subtract.dll --verbosity detailed'
+    group:
+        kind: run
+        isDefault: true

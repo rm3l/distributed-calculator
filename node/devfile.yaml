@@ -1,0 +1,49 @@
+schemaVersion: 2.2.0
+
+metadata:
+  name: distributed-calculator-divider
+  version: 0.0.1
+  displayName: Distributed Calculator Divider
+  description: |
+    Divider service, part of a distributed Calculator app where
+    each operation is powered by a different service written in a different language/framework
+  tags:
+  - microservices
+  - distributed
+  - calculator
+  - node
+  - express
+
+components:
+
+- name: node-divider
+  container:
+    # registry.access.redhat.com/ubi8/nodejs-16:latest does not work because of non-root user in container. No permissions to write node_modules...
+    #image: registry.access.redhat.com/ubi8/nodejs-16:latest
+    image: docker.io/node:19-alpine
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    endpoints:
+    - name: divider
+      targetPort: 4000
+      exposure: internal
+
+commands:
+
+- id: divider-build
+  exec:
+    component: node-divider
+    workingDir: ${PROJECT_SOURCE}
+    commandLine: 'npm install'
+    group:
+      kind: build
+      isDefault: true
+
+- id: divider-run
+  exec:
+    component: node-divider
+    workingDir: ${PROJECT_SOURCE}
+    commandLine: 'node app.js'
+    group:
+      kind: run
+      isDefault: true
