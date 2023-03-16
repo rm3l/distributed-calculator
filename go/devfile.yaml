@@ -1,0 +1,48 @@
+schemaVersion: 2.2.0
+
+metadata:
+  name: distributed-calculator-adder
+  version: 0.0.1
+  displayName: Distributed Calculator Adder
+  description: |
+    Adder Service, part of a distributed Calculator app where
+    each operation is powered by a different service written in a different language/framework
+  tags:
+  - microservices
+  - distributed
+  - calculator
+  - go
+  - mux
+
+components:
+
+- name: go-adder
+  container:
+    image: quay.io/devfile/golang:latest
+    command: ['tail']
+    args: ['-f', '/dev/null']
+    env:
+    - name: APP_PORT
+      value: '6000'
+    endpoints:
+    - name: adder
+      targetPort: 6000
+      exposure: internal
+
+commands:
+- id: adder-build
+  exec:
+    component: go-adder
+    workingDir: ${PROJECT_SOURCE}
+    commandLine: 'go build app.go'
+    group:
+      kind: build
+      isDefault: true
+
+- id: adder-run
+  exec:
+    component: go-adder
+    commandLine: '${PROJECT_SOURCE}/app'
+    group:
+      kind: run
+      isDefault: true
