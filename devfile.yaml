@@ -84,7 +84,7 @@ components:
     args: ['-f', '/dev/null']
     env:
     - name: ASPNETCORE_URLS
-      value: 'http://localhost:7000'
+      value: 'http://0.0.0.0:7000'
     endpoints:
     - name: subtracter
       targetPort: 7000
@@ -112,7 +112,7 @@ commands:
   exec:
     component: python-multiplier
     workingDir: ${PROJECT_SOURCE}/python
-    commandLine: 'flask run'
+    commandLine: 'flask run --host=0.0.0.0'
 
 - id: divider-build
   exec:
