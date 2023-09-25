@@ -90,6 +90,56 @@ components:
       targetPort: 7000
       exposure: internal
 
+- name: adder-deploy-image-component
+  image:
+    imageName: go-adder
+    dockerfile:
+      buildContext: ${PROJECT_SOURCE}/go
+      uri: go/Dockerfile
+- name: adder-deploy-k8s-component
+  kubernetes:
+    uri: go/k8s.yaml
+
+- name: divider-deploy-image-component
+  image:
+    imageName: node-divider
+    dockerfile:
+      buildContext: ${PROJECT_SOURCE}/node
+      uri: node/Dockerfile
+- name: divider-deploy-k8s-component
+  kubernetes:
+    uri: node/k8s.yaml
+
+- name: multiplier-deploy-image-component
+  image:
+    imageName: python-multiplier
+    dockerfile:
+      buildContext: ${PROJECT_SOURCE}/python
+      uri: python/Dockerfile
+- name: multiplier-deploy-k8s-component
+  kubernetes:
+    uri: python/k8s.yaml
+
+- name: subtracter-deploy-image-component
+  image:
+    imageName: dotnet-subtracter
+    dockerfile:
+      buildContext: ${PROJECT_SOURCE}/csharp
+      uri: csharp/Dockerfile
+- name: subtracter-deploy-k8s-component
+  kubernetes:
+    uri: csharp/k8s.yaml
+
+- name: frontend-deploy-image-component
+  image:
+    imageName: frontend
+    dockerfile:
+      buildContext: ${PROJECT_SOURCE}/react-calculator
+      uri: react-calculator/Dockerfile
+- name: frontend-deploy-k8s-component
+  kubernetes:
+    uri: react-calculator/k8s.yaml
+
 commands:
 - id: adder-build
   exec:
@@ -188,3 +238,92 @@ commands:
     group:
         kind: run
         isDefault: true
+
+
+- id: adder-deploy
+  composite:
+    commands:
+    - adder-deploy-image
+    - adder-deploy-k8s
+    group:
+      kind: deploy
+      isDefault: false
+- id: adder-deploy-image
+  apply:
+    component: adder-deploy-image-component
+- id: adder-deploy-k8s
+  apply:
+    component: adder-deploy-k8s-component
+
+- id: subtracter-deploy
+  composite:
+    commands:
+    - subtracter-deploy-image
+    - subtracter-deploy-k8s
+    group:
+      kind: deploy
+      isDefault: false
+- id: subtracter-deploy-image
+  apply:
+    component: subtracter-deploy-image-component
+- id: subtracter-deploy-k8s
+  apply:
+    component: subtracter-deploy-k8s-component
+
+- id: multiplier-deploy
+  composite:
+    commands:
+    - multiplier-deploy-image
+    - multiplier-deploy-k8s
+    group:
+      kind: deploy
+      isDefault: false
+- id: multiplier-deploy-image
+  apply:
+    component: multiplier-deploy-image-component
+- id: multiplier-deploy-k8s
+  apply:
+    component: multiplier-deploy-k8s-component
+
+- id: divider-deploy
+  composite:
+    commands:
+    - divider-deploy-image
+    - divider-deploy-k8s
+    group:
+      kind: deploy
+      isDefault: false
+- id: divider-deploy-image
+  apply:
+    component: divider-deploy-image-component
+- id: divider-deploy-k8s
+  apply:
+    component: divider-deploy-k8s-component
+
+- id: frontend-deploy
+  composite:
+    commands:
+    - frontend-deploy-image
+    - frontend-deploy-k8s
+    group:
+      kind: deploy
+      isDefault: false
+- id: frontend-deploy-image
+  apply:
+    component: frontend-deploy-image-component
+- id: frontend-deploy-k8s
+  apply:
+    component: frontend-deploy-k8s-component
+
+- id: deploy
+  composite:
+    commands:
+    - adder-deploy
+    - divider-deploy
+    - multiplier-deploy
+    - subtracter-deploy
+    - frontend-deploy
+    parallel: false
+    group:
+      kind: deploy
+      isDefault: true
